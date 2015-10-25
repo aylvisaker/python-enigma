@@ -244,29 +244,27 @@ notch = ['e','q','v']
 ref = rB
 plg = ['nk','er','ay','tj','cb','qm','sl','wo','ig','fh']
 init(rot,rin,notch,ref,plg)
-
-# DECRYPTION EXAMPLE
-#pos = ['y','y','e']
-#input = 'qatctqcnwmtvcopyvfholcqtvgmtwobrfoubrmqbrihllxdbtzlxlgzuqfcwpxpokolffadxdavtjm'
-#print(enigmaC(pos,input))
+pos = ['y','y','e']
+inpt = 'qatctqcnwmtvcopyvfholcqtvgmtwobrfoubrmqbrihllxdbtzlxlgzuqfcwpxpokolffadxdavtjm'
+print(enigmaC(pos,inpt))
 
 # BOMBE EXAMPLE
-t = time.clock()
-inpt = 'qatctqcnwmtvc'
-output = 'secretmessage'
+#t = time.clock()
+#inpt = 'qatctqcnwmtvc'
+#output = 'secretmessage'
 #inpt = 'wetterbericht'
 #output = enigmaC(['m','o','q'],inpt)
 #output = 'atqbggywcrybg'
 #inpt = 'helloworldiamabombeandmyjobistodecryptthismessage'
 #output = enigmaC(['p','o','q'],inpt)
-test = 't'
-plg = []
-init(rot,rin,notch,ref,plg)
-stops = bombe(inpt,output,test)
-print('position / contradiction2: ',stops,len(stops),time.clock() - t)
-t = time.clock()
-stops = authenticbombe(inpt,output,test)
-print('rings    / contradiction2: ',stops,len(stops),time.clock() - t)
+#test = 't'
+#plg = []
+#init(rot,rin,notch,ref,plg)
+#stops = bombe(inpt,output,test)
+#print('position / contradiction2: ',stops,len(stops),time.clock() - t)
+#t = time.clock()
+#stops = authenticbombe(inpt,output,test)
+#print('rings    / contradiction2: ',stops,len(stops),time.clock() - t)
 #stops = authenticbombe(inpt,output,test)
 #print('rings / contradiction2: ',stops,len(stops),time.clock() - t)
 
@@ -286,6 +284,6 @@ print('rings    / contradiction2: ',stops,len(stops),time.clock() - t)
 #print(bombe(input,output,test),time.clock() - t)
 #print(contradiction2([num[x] for x in input],[num[x] for x in output],poslist([num[x] for x in ['y','y','y']],len(input)),[0,24]))
 
-plain = ''
-cipher = ''
-initial = [num[x] for x in ['y','y','e']]
+#plain = ''
+#cipher = ''
+#initial = [num[x] for x in ['y','y','e']]
