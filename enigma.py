@@ -2,7 +2,7 @@ import time
 import tkinter as tk
 
 letters = 'abcdefghijklmnopqrstuvwxyz'
-let = {i:'abcdefghijklmnopqrstuvwxyz'[i] for i in range(26)}
+let = {i:letters[i] for i in range(26)}
 let['+'] = '+'
 num = {let[i]:i for i in range(26)}
 num['+'] = '+'
@@ -331,7 +331,9 @@ root = tk.Tk()
 text = tk.Text(root, background='white', foreground='black', font=('Courier New', 24))
 text.pack()
 root.bind('<KeyPress>', onKeyPress)
-#root.mainloop()
+root.mainloop()
+
+notches = [['q'],['e'],['v'],['j'],['z'],['z','m'],['z','m'],['z','m']]
 
 # I              Q      If rotor steps from Q to R, the next rotor is advanced
 # II             E      If rotor steps from E to F, the next rotor is advanced
