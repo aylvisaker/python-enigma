@@ -137,7 +137,7 @@ def authenticbombe(inpt,output,test):
     outputn = [num[x] for x in output]
     t = num[test]
     stops = []
-    lis = poslist([num[x] for x in ['y','y','y']],len(inputn))
+    lis = poslist([num[x] for x in ['y','y','e']],len(inputn))
     for x in range(26):
         for y in range(26):
             for z in range(26):
@@ -160,7 +160,7 @@ output = 'secretmessage'
 
 t = time.clock()
 stops = bombe(inpt,output,test)
-print('position: ',stops,len(stops),time.clock() - t)
-#t = time.clock()
-#stops = authenticbombe(inpt,output,test)
-#print('ring settings: ',stops,len(stops),time.clock() - t)
+print('position stops: ',stops,len(stops),time.clock() - t)
+t = time.clock()
+stops = authenticbombe(inpt,output,test)
+print('ring stops: ',stops,len(stops),time.clock() - t)
