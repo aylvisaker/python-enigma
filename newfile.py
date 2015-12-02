@@ -98,5 +98,12 @@ if longplain==longdecipher:
 else: print('there was an error')
 
 a = [1,2,3,4,5]
-a.append(a.pop(2))
+a.append(a.pop(0))
+print(a)
+
+import collections
+a = collections.deque([1,2,3,4,5])
+a.rotate(-1)
+print(a)
+a.rotate(-2)
 print(a)
