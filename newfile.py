@@ -8,6 +8,9 @@ for i in range(26):
 	conv[alphabet[i]] = i
 	conv[alphabet[i].lower()] = i
 
+def shift(p,i):
+        conv[(conv[i] + conv[p]) % 26]
+
 rotor = {}
 rotor['IC']     = 'DMTWSILRUYQNKFEJCAZBPGXOHV'
 rotor['IIC']    = 'HQZGPJTMOBLNCIFDYAWVEUSRKX'
