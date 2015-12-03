@@ -1,5 +1,6 @@
 import random
 import time
+import collections
 
 alphabet = 'abcdefghijklmnopqrstuvwxyz'.upper()
 conv = {}
@@ -7,9 +8,9 @@ for i in range(26):
 	conv[i] = alphabet[i]
 	conv[alphabet[i]] = i
 	conv[alphabet[i].lower()] = i
-
-def shift(p,i):
-        conv[(conv[i] + conv[p]) % 26]
+shift = {}
+for p in alphabet:
+	shift[p] = conv[(conv[p] + 1) % 26]
 
 rotor = {}
 rotor['IC']     = 'DMTWSILRUYQNKFEJCAZBPGXOHV'
@@ -25,9 +26,9 @@ rotor['II-K']   = 'ZOUESYDKFWPCIQXHMVBLGNJRAT'
 rotor['III-K']  = 'EHRVXGAOBQUSIMZFLYNWKTPDJC'
 rotor['UKW-K']  = 'IMETCGFRAYSQBZXWLHKDVUPOJN'
 rotor['ETW-K']  = 'QWERTZUIOASDFGHJKPYXCVBNML'
-rotor['I']      = [conv[x] for x in 'EKMFLGDQVZNTOWYHXUSPAIBRCJ']
-rotor['II']     = [conv[x] for x in 'AJDKSIRUXBLHWTMCQGZNPYFVOE']
-rotor['III']    = [conv[x] for x in 'BDFHJLCPRTXVZNYEIWGAKMUSQO']
+rotor['I']      = 'EKMFLGDQVZNTOWYHXUSPAIBRCJ'
+rotor['II']     = 'AJDKSIRUXBLHWTMCQGZNPYFVOE'
+rotor['III']    = 'BDFHJLCPRTXVZNYEIWGAKMUSQO'
 rotor['IV']     = 'ESOVPZJAYQUIRHXLNFTGKDCMWB'
 rotor['V']      = 'VZBRGITYUPSDNHLXAWMJQOFECK'
 rotor['VI']     = 'JPGVOUMFYQBENHZRDKASXLICTW'
@@ -36,7 +37,7 @@ rotor['VIII']   = 'FKQHTLXOCBJSPDZRAMEWNIUYGV'
 rotor['Beta']   = 'LEYJVCNIXWPBQMDRTAKZGFUHOS'
 rotor['Gamma']  = 'FSOKANUERHMBTIYCWLQPZXVGJD'
 rotor['A']      = 'EJMZALYXVBWFCRQUONTSPIKHGD'
-rotor['B']      = [conv[x] for x in 'YRUHQSLDPXNGOKMIEBFZCWVJAT']
+rotor['B']      = 'YRUHQSLDPXNGOKMIEBFZCWVJAT'
 rotor['C']      = 'FVPJIAOYEDRZXWGCTKUQSBNMHL'
 rotor['B-Thin'] = 'ENKQAUYWJICOPBLMDXZVFTHRGS'
 rotor['C-Thin'] = 'RDOBJNTKVEHMLFCWZAXGYIPSUQ'
@@ -54,32 +55,29 @@ rot = {}
 inv = {}
 ref = {}
 for i in range(26):
-	rot[0,0,i] = rotor['I'][i]
-	rot[1,0,i] = rotor['II'][i]
-	rot[2,0,i] = rotor['III'][i]
-	inv[0,0,rotor['I'][i]] = i
-	inv[1,0,rotor['II'][i]] = i
-	inv[2,0,rotor['III'][i]] = i
-	ref[i] = rotor['B'][i]
+	rot[0,'A',conv[i]] = rotor['I'][i]
+	rot[1,'A',conv[i]] = rotor['II'][i]
+	rot[2,'A',conv[i]] = rotor['III'][i]
+	inv[0,'A',rotor['I'][i]] = conv[i]
+	inv[1,'A',rotor['II'][i]] = conv[i]
+	inv[2,'A',rotor['III'][i]] = conv[i]
+	ref[conv[i]] = rotor['B'][i]
 
-for i in range(26):
-	for p in range(26):
-		rot[0,p,i] = (rot[0,0,(i - p)%26] + p) % 26
-		rot[1,p,i] = (rot[1,0,(i - p)%26] + p) % 26
-		rot[2,p,i] = (rot[2,0,(i - p)%26] + p) % 26
-		inv[0,p,i] = (inv[0,0,(i - p)%26] + p) % 26
-                inv[1,p,i] = (inv[1,0,(i - p)%26] + p) % 26
-                inv[2,p,i] = (inv[2,0,(i - p)%26] + p) % 26
+for i in alphabet:
+	for p in alphabet:
+		for r in range(3):
+			rot[r,p,i] = conv[(conv[rot[r,'A',conv[(conv[i] - conv[p])%26]]] + conv[p]) % 26]
+			inv[r,p,i] = conv[(conv[inv[r,'A',conv[(conv[i] - conv[p])%26]]] + conv[p]) % 26]
 
 def enigmaC(positions,plain):
 	pos = list(positions)
-	cha = [conv[x] for x in plain]
+	cha = list(plain)
 	for n in range(len(cha)):
-		pos[2] = (pos[2] + 1) % 26
-		if pos[2] == 0:
-			pos[1] = (pos[1] + 1) % 26
-			if pos[1] == 0:
-				pos[0] = (pos[0] + 1) % 26
+		pos[2] = shift[pos[2]]
+		if pos[2] in notch['III']:
+			pos[1] = shift[pos[1]]
+		if pos[1] in notch['II']:
+			pos[0] = shift[pos[0]]
 		x = rot[2,pos[2],cha[n]]
 		x = rot[1,pos[1],x]
 		x = rot[0,pos[0],x]
@@ -87,18 +85,19 @@ def enigmaC(positions,plain):
 		x = inv[0,pos[0],x]
 		x = inv[1,pos[1],x]
 		x = inv[2,pos[2],x]
-		cha[n] = conv[x]
+		cha[n] = x
 	return(''.join(cha))
 
-n = 10000
+n = 5000
 longplain = ''.join([conv[random.randint(0,25)] for x in range(n)])
 t = time.clock()
-longcipher = enigmaC((22,2,3),longplain)
-longdecipher = enigmaC((22,2,3),longcipher)
+longcipher = enigmaC('XMZ',longplain)
+longdecipher = enigmaC('XMZ',longcipher)
 print(str(int(2*n / (time.clock() - t))) + ' characters per second')
 if longplain==longdecipher:
 	print('all is well')
 else: print('there was an error')
+print(longplain)
 
 a = [1,2,3,4,5]
 a.append(a.pop(0))
@@ -110,3 +109,4 @@ a.rotate(-1)
 print(a)
 a.rotate(-2)
 print(a)
+print(a[1])
