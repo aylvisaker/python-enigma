@@ -26,8 +26,11 @@ rotor['II-K']   = 'ZOUESYDKFWPCIQXHMVBLGNJRAT'
 rotor['III-K']  = 'EHRVXGAOBQUSIMZFLYNWKTPDJC'
 rotor['UKW-K']  = 'IMETCGFRAYSQBZXWLHKDVUPOJN'
 rotor['ETW-K']  = 'QWERTZUIOASDFGHJKPYXCVBNML'
+#                  ABCDEFGHIJKLMNOPQRSTUVWXYZ
 rotor['I']      = 'EKMFLGDQVZNTOWYHXUSPAIBRCJ'
+#                  ABCDEFGHIJKLMNOPQRSTUVWXYZ
 rotor['II']     = 'AJDKSIRUXBLHWTMCQGZNPYFVOE'
+#                  ABCDEFGHIJKLMNOPQRSTUVWXYZ
 rotor['III']    = 'BDFHJLCPRTXVZNYEIWGAKMUSQO'
 rotor['IV']     = 'ESOVPZJAYQUIRHXLNFTGKDCMWB'
 rotor['V']      = 'VZBRGITYUPSDNHLXAWMJQOFECK'
@@ -37,6 +40,7 @@ rotor['VIII']   = 'FKQHTLXOCBJSPDZRAMEWNIUYGV'
 rotor['Beta']   = 'LEYJVCNIXWPBQMDRTAKZGFUHOS'
 rotor['Gamma']  = 'FSOKANUERHMBTIYCWLQPZXVGJD'
 rotor['A']      = 'EJMZALYXVBWFCRQUONTSPIKHGD'
+#                  ABCDEFGHIJKLMNOPQRSTUVWXYZ
 rotor['B']      = 'YRUHQSLDPXNGOKMIEBFZCWVJAT'
 rotor['C']      = 'FVPJIAOYEDRZXWGCTKUQSBNMHL'
 rotor['B-Thin'] = 'ENKQAUYWJICOPBLMDXZVFTHRGS'
@@ -54,6 +58,7 @@ notch['VIII']   = ['Z','M']
 rot = {}
 inv = {}
 ref = {}
+dum = {}
 for i in range(26):
 	rot[0,'A',conv[i]] = rotor['I'][i]
 	rot[1,'A',conv[i]] = rotor['II'][i]
@@ -66,9 +71,9 @@ for i in range(26):
 for i in alphabet:
 	for p in alphabet:
 		for r in range(3):
-			rot[r,p,i] = conv[(conv[rot[r,'A',conv[(conv[i] - conv[p])%26]]] + conv[p]) % 26]
-			inv[r,p,i] = conv[(conv[inv[r,'A',conv[(conv[i] - conv[p])%26]]] + conv[p]) % 26]
-
+			rot[r,p,i] = conv[(conv[rot[r,'A',conv[(conv[i] + conv[p])%26]]] - conv[p]) % 26]
+			inv[r,p,i] = conv[(conv[inv[r,'A',conv[(conv[i] + conv[p])%26]]] - conv[p]) % 26]
+			dum[r,p,i] = i
 def enigmaC(positions,plain):
 	pos = list(positions)
 	cha = list(plain)
@@ -79,13 +84,20 @@ def enigmaC(positions,plain):
 			pos[1] = shift[pos[1]]
 			pos[0] = shift[pos[0]]
 		pos[2] = shift[pos[2]]
-		print(pos)
+		#print(pos)
+		print(cha[n])
 		x = rot[2,pos[2],cha[n]]
+		print(x)
 		x = rot[1,pos[1],x]
+		print(x)
 		x = rot[0,pos[0],x]
+		print(x)
 		x = ref[x]
+		print(x)
 		x = inv[0,pos[0],x]
+		print(x)
 		x = inv[1,pos[1],x]
+		print(x)
 		x = inv[2,pos[2],x]
 		cha[n] = x
 	return(''.join(cha))
@@ -100,7 +112,8 @@ def enigmaC(positions,plain):
 #	print('all is well')
 #else: print('there was an error')
 
-print(enigmaC('ADU','AAAAAAAAAA'))
+print(enigmaC('AAA','H'))
+#print(enigmaC('AAA','AAAAA'))
 
 #a = [1,2,3,4,5]
 #a.append(a.pop(0))

@@ -5,14 +5,14 @@ let = {i:letters[i] for i in range(26)}
 let['+'] = '+'
 num = {let[i]:i for i in range(26)}
 num['+'] = '+'
-
-rI = 'EKMFLGDQVZNTOWYHXUSPAIBRCJ'.lower()
-rII = 'AJDKSIRUXBLHWTMCQGZNPYFVOE'.lower()
-rIII = 'BDFHJLCPRTXVZNYEIWGAKMUSQO'.lower()
-rIV = 'ESOVPZJAYQUIRHXLNFTGKDCMWB'.lower()
-rV = 'VZBRGITYUPSDNHLXAWMJQOFECK'.lower()
-rVI = 'JPGVOUMFYQBENHZRDKASXLICTW'.lower()
-rVII = 'NZJHGRCXMYSWBOUFAIVLPEKQDT'.lower()
+#        abcdefghijklmnopqrstuvwxyz
+rI    = 'EKMFLGDQVZNTOWYHXUSPAIBRCJ'.lower()
+rII   = 'AJDKSIRUXBLHWTMCQGZNPYFVOE'.lower()
+rIII  = 'BDFHJLCPRTXVZNYEIWGAKMUSQO'.lower()
+rIV   = 'ESOVPZJAYQUIRHXLNFTGKDCMWB'.lower()
+rV    = 'VZBRGITYUPSDNHLXAWMJQOFECK'.lower()
+rVI   = 'JPGVOUMFYQBENHZRDKASXLICTW'.lower()
+rVII  = 'NZJHGRCXMYSWBOUFAIVLPEKQDT'.lower()
 rVIII = 'FKQHTLXOCBJSPDZRAMEWNIUYGV'.lower()
 
 notches = [['q'],['e'],['v'],['j'],['z'],['z','m'],['z','m'],['z','m']]
@@ -68,20 +68,29 @@ def single(pos,x):
     a = (pos[0] - rings[0])#%26
     b = (pos[1] - rings[1])#%26
     c = (pos[2] - rings[2])#%26
+    print(a,b,c)
     out = x
     out = pb[out]
+    print(let[out])
     #out = (r2[(out + c)%26] - c)%26
     #out = (r1[(out + b)%26] - b)%26
     #out = (r0[(out + a)%26] - a)%26
     out = r2[out + c] - c
+    print(let[out])
+    print(r2)
     out = r1[out + b] - b
+    print(let[out])
     out = r0[out + a] - a
+    print(let[out])
     out = r[out]
+    print(let[out])
     #out = (r0i[(out + a)%26] - a)%26
     #out = (r1i[(out + b)%26] - b)%26
     #out = (r2i[(out + c)%26] - c)%26
     out = r0i[out + a] - a
+    print(let[out])
     out = r1i[out + b] - b
+    print(let[out])
     out = r2i[out + c] - c
     out = pb[out]
     return(out)
@@ -109,29 +118,39 @@ def poslist(poss,n):
 # ENCRYPT A MESSAGE (LETTERED POSITION, MESSAGE)
 def enigmaC(pos,x):
     out = []
-    posn = [num[x] for x in pos]
+    posn = [num[z] for z in pos]
     for i in x:
         posn = rotorstep(posn)
         out.append(let[single(posn,num[i])])
     return ''.join(out)
 
 # EXAMPLE
-rot = [rII,rI,rIII]
-rin = ['j','g','n']
-notch = ['e','q','v']
-ref = rB
-plg = ['nk','er','ay','tj','cb','qm','sl','wo','ig','fh']
-init(rot,rin,notch,ref,plg)
-pos = ['y','y','e']
+#rot = [rII,rI,rIII]
+#rin = ['j','g','n']
+#notch = ['e','q','v']
+#ref = rB
+#plg = ['nk','er','ay','tj','cb','qm','sl','wo','ig','fh']
+#init(rot,rin,notch,ref,plg)
+#pos = ['y','y','e']
 #inpt = 'qatctqcnwmtvcopyvfholcqtvgmtwobrfoubrmqbrihllxdbtzlxlgzuqfcwpxpokolffadxdavtjm'
 #print(enigmaC(pos,inpt))
 
-from random import randint
-t = time.clock()
-limit = 1000000
-x = ''.join([let[randint(0,25)] for x in range(limit)])
-t = time.clock()
-y = enigmaC(pos,x)
-z = enigmaC(pos,y)
-print(str(2*limit/(time.clock()-t)) + ' characters per second')
-print(x==z)
+#from random import randint
+#t = time.clock()
+#limit = 1000000
+#x = ''.join([let[randint(0,25)] for x in range(limit)])
+#t = time.clock()
+#y = enigmaC(pos,x)
+#z = enigmaC(pos,y)
+#print(str(2*limit/(time.clock()-t)) + ' characters per second')
+#print(x==z)
+
+rot = [rI,rII,rIII]
+rin = ['a','a','a']
+notch = ['q','e','v']
+ref = rB
+plg = []
+init(rot,rin,notch,ref,plg)
+pos = ['a','a','a']
+inpt = 'h'
+print(enigmaC(pos,inpt))
