@@ -75,7 +75,7 @@ def enigmaC(positions,plain):
 	for n in range(len(cha)):
 		if pos[2] in notch['III']:
 			pos[1] = shift[pos[1]]
-		if pos[1] in notch['II']:
+		elif pos[1] in notch['II']:
 			pos[1] = shift[pos[1]]
 			pos[0] = shift[pos[0]]
 		pos[2] = shift[pos[2]]
