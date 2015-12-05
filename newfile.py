@@ -85,32 +85,32 @@ def enigmaC(positions,plain):
 			pos[0] = shift[pos[0]]
 		pos[2] = shift[pos[2]]
 		#print(pos)
-		print(cha[n])
+		#print(cha[n])
 		x = rot[2,pos[2],cha[n]]
-		print(x)
+		#print(x)
 		x = rot[1,pos[1],x]
-		print(x)
+		#print(x)
 		x = rot[0,pos[0],x]
-		print(x)
+		#print(x)
 		x = ref[x]
-		print(x)
+		#print(x)
 		x = inv[0,pos[0],x]
-		print(x)
+		#print(x)
 		x = inv[1,pos[1],x]
-		print(x)
+		#print(x)
 		x = inv[2,pos[2],x]
 		cha[n] = x
 	return(''.join(cha))
 
-#n = 1000
-#longplain = ''.join([conv[random.randint(0,25)] for x in range(n)])
-#t = time.clock()
-#longcipher = enigmaC('XMZ',longplain)
-#longdecipher = enigmaC('XMZ',longcipher)
-#print(str(int(2*n / (time.clock() - t))) + ' characters per second')
-#if longplain==longdecipher:
-#	print('all is well')
-#else: print('there was an error')
+n = 10000
+longplain = ''.join([conv[random.randint(0,25)] for x in range(n)])
+t = time.clock()
+longcipher = enigmaC('XMZ',longplain)
+longdecipher = enigmaC('XMZ',longcipher)
+print(str(int(2*n / (time.clock() - t))) + ' characters per second')
+if longplain==longdecipher:
+	print('all is well')
+else: print('there was an error')
 
 print(enigmaC('AAA','H'))
 #print(enigmaC('AAA','AAAAA'))
