@@ -156,4 +156,6 @@ print('positions calculated at a rate of ' + pps + ' per second')
 w = 1000000000
 ncps = str(int(w/(w/float(cps) - w/float(pps))))
 print('mapping could be improved to ' + ncps + ' cps by precomputing positions')
-print('fusing reflector to fourth rotor would improve to (at least) ' + str(int(11 * float(ncps) / 9)) + ' cps')
+print('fusing reflector to fourth rotor would improve to at least ' + str(int(11 * float(ncps) / 9)) + ' cps (' + str(int(11 * float(cps) / 9)) + ' without precomputing positions)')
+periodcheck = positionlist(randpos,26*26*25 + 1,rts)
+if periodcheck[0] == periodcheck[-1]: print('period of the machine is accurate')
