@@ -83,7 +83,7 @@ def initialize(rgs,rts,rfs,plugs):
 	        pb[pair[1]] = pair[0]
 	return([rot,inv,ref,pb])
 
-def positionlist(initial,length):
+def positionlist(initial,length,rts):
 	out = []
 	pos = list(initial)
 	for n in range(length):
@@ -93,9 +93,8 @@ def positionlist(initial,length):
                         pos[2] = shift[pos[2]]
                         pos[1] = shift[pos[1]]
                 pos[3] = shift[pos[3]]
-		out.append(pos)
+		out.append(''.join(pos))
 	return(out)
-		
 
 def enigma(positions,plain):
 	pos = list(positions)
@@ -139,12 +138,18 @@ randpos = ''.join([conv[random.randint(0,25)] for x in range(4)])
 t = time.clock()
 longcipher = enigma(randpos,longplain)
 longdecipher = enigma(randpos,longcipher)
-print('mapping at ' + str(int(2*n / (time.clock() - t))) + ' characters per second')
+cps = str(int(2*n / (time.clock() - t)))
+print('mapping at ' + cps + ' characters per second')
 if longplain==longdecipher:
 	print('symmetric encryption test: pass')
 else: print('there was an error')
-cipher = 'HCEYZTCSOPUPPZDICQRDLWXXFACTTJMBRDVCJJMMZRPYIKHZAWGLYXWTMJPQUEFSZBOTVRLALZXWVXTSLFFFAUDQFBWRRYAPSBOWJMKLDUYUPFUQDOWVHAHCDWAUARSWTKOFVOYFPUFHVZFDGGPOOVGRMBPXXZCANKMONFHXPCKHJZBUMXJWXKAUODXZUCVCXPFT'
-plain = 'BOOTKLARXBEIJSCHNOORBETWAZWOSIBENXNOVXSECHSNULCBMXPROVIANTBISZWONULXDEZXBENOETIGEGLMESERYNOCHVIEFKLHRXSTEHEMARQUBRUNOBRUNFZWOFUHFXLAGWWIEJKCHAEFERJXNNTWWWFUNFYEINSFUNFMBSTEIGENDYGUTESIWXDVVVJRASCH'
 decipher = enigma(position,cipher)
 if decipher == plain: print('historical accuracy check: pass')
 else: print(decipher)
+if positionlist('ZADT',5,['Beta','I','II','III']) == ['ZADU', 'ZADV', 'ZAEW', 'ZBFX', 'ZBFY']: print('position list double-step check: pass')
+t = time.clock()
+positionlist(position,2*n,rts)
+pps = str(int(2*n / (time.clock() - t)))
+print('positions calculated at a rate of ' + pps + ' per second')
+w = 1000000000
+print('mapping could be improved to ' + str(int(w/(w/float(cps) - w/float(pps)))) + ' cps by precomputing positions')
