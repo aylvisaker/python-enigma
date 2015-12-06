@@ -111,6 +111,9 @@ def enigma(positions,plain):
 		x = rot[3,pos[3],x]
 		x = rot[2,pos[2],x]
 		x = rot[1,pos[1],x]
+		# fourth rotor can be treated as part of reflector
+		# eliminate two unnecessary lookups
+		# reduce size of rot dictionary by 25%
 		x = rot[0,pos[0],x]
 		x = ref[x]
 		x = inv[0,pos[0],x]
@@ -148,8 +151,10 @@ if decipher == plain: print('historical accuracy check: pass')
 else: print(decipher)
 if positionlist('ZADT',5,['Beta','I','II','III']) == ['ZADU', 'ZADV', 'ZAEW', 'ZBFX', 'ZBFY']: print('position list double-step check: pass')
 t = time.clock()
-positionlist(position,2*n,rts)
+positionlist(randpos,2*n,rts)
 pps = str(int(2*n / (time.clock() - t)))
 print('positions calculated at a rate of ' + pps + ' per second')
 w = 1000000000
-print('mapping could be improved to ' + str(int(w/(w/float(cps) - w/float(pps)))) + ' cps by precomputing positions')
+ncps = str(int(w/(w/float(cps) - w/float(pps))))
+print('mapping could be improved to ' + ncps + ' cps by precomputing positions')
+print('fusing reflector to fourth rotor would improve to (at least) ' + str(int(11 * float(ncps) / 9)) + ' cps')
