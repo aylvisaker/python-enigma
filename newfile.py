@@ -65,6 +65,7 @@ def initialize(rgs,rts,rfs,plugs):
 	inv = {}
 	ref = {}
 	pb  = {}
+	# UHR should be implemented as well
 	for i in alphabet:
 		pb[i] = i
 		ref[i] = rotor[rfs][conv[i]]
