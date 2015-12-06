@@ -20,19 +20,20 @@ for p in alphabet:
 
 rotor = {}
 notch = {}
-rotor['IC']     = 'DMTWSILRUYQNKFEJCAZBPGXOHV'
-rotor['IIC']    = 'HQZGPJTMOBLNCIFDYAWVEUSRKX'
-rotor['IIIC']   = 'UQNTLSZFMREHDPXKIBVYGJCWOA'
-rotor['I-r']    = 'JGDQOXUSCAMIFRVTPNEWKBLZYH'
-rotor['II-r']   = 'NTZPSFBOKMWRCJDIVLAEYUXHGQ'
-rotor['III-r']  = 'JVIUBHTCDYAKEQZPOSGXNRMWFL'
-rotor['UKW-r']  = 'QYHOGNECVPUZTFDJAXWMKISRBL'
-rotor['ETW-r']  = 'QWERTZUIOASDFGHJKPYXCVBNML'
-rotor['I-K']    = 'PEZUOHXSCVFMTBGLRINQJWAYDK'
-rotor['II-K']   = 'ZOUESYDKFWPCIQXHMVBLGNJRAT'
-rotor['III-K']  = 'EHRVXGAOBQUSIMZFLYNWKTPDJC'
-rotor['UKW-K']  = 'IMETCGFRAYSQBZXWLHKDVUPOJN'
-rotor['ETW-K']  = 'QWERTZUIOASDFGHJKPYXCVBNML'
+# notch settings for the following are unknown
+#rotor['IC']     = 'DMTWSILRUYQNKFEJCAZBPGXOHV'
+#rotor['IIC']    = 'HQZGPJTMOBLNCIFDYAWVEUSRKX'
+#rotor['IIIC']   = 'UQNTLSZFMREHDPXKIBVYGJCWOA'
+#rotor['I-r']    = 'JGDQOXUSCAMIFRVTPNEWKBLZYH'
+#rotor['II-r']   = 'NTZPSFBOKMWRCJDIVLAEYUXHGQ'
+#rotor['III-r']  = 'JVIUBHTCDYAKEQZPOSGXNRMWFL'
+#rotor['UKW-r']  = 'QYHOGNECVPUZTFDJAXWMKISRBL'
+#rotor['ETW-r']  = 'QWERTZUIOASDFGHJKPYXCVBNML'
+#rotor['I-K']    = 'PEZUOHXSCVFMTBGLRINQJWAYDK'
+#rotor['II-K']   = 'ZOUESYDKFWPCIQXHMVBLGNJRAT'
+#rotor['III-K']  = 'EHRVXGAOBQUSIMZFLYNWKTPDJC'
+#rotor['UKW-K']  = 'IMETCGFRAYSQBZXWLHKDVUPOJN'
+#rotor['ETW-K']  = 'QWERTZUIOASDFGHJKPYXCVBNML'
 rotor['I']      = 'EKMFLGDQVZNTOWYHXUSPAIBRCJ'
 rotor['II']     = 'AJDKSIRUXBLHWTMCQGZNPYFVOE'
 rotor['III']    = 'BDFHJLCPRTXVZNYEIWGAKMUSQO'
@@ -41,6 +42,7 @@ rotor['V']      = 'VZBRGITYUPSDNHLXAWMJQOFECK'
 rotor['VI']     = 'JPGVOUMFYQBENHZRDKASXLICTW'
 rotor['VII']    = 'NZJHGRCXMYSWBOUFAIVLPEKQDT'
 rotor['VIII']   = 'FKQHTLXOCBJSPDZRAMEWNIUYGV'
+# reflectors and greek rotors do not require notch settings
 rotor['Beta']   = 'LEYJVCNIXWPBQMDRTAKZGFUHOS'
 rotor['Gamma']  = 'FSOKANUERHMBTIYCWLQPZXVGJD'
 rotor['A']      = 'EJMZALYXVBWFCRQUONTSPIKHGD'
@@ -57,11 +59,6 @@ notch['V']      = ['Z']
 notch['VI']     = ['Z','M']
 notch['VII']    = ['Z','M']
 notch['VIII']   = ['Z','M']
-
-rgs = 'ZZDG'
-rts = ['Beta','VI','I','III']
-rfs = 'B-Thin'
-plugs = 'BQ CR DIe EJ KW MT OS PX UZ GH'
 
 def initialize(rgs,rts,rfs,plugs):
 	rot = {}
@@ -125,7 +122,9 @@ def enigma(positions,plain):
 	return(''.join(cha))
 
 rgs = 'ZZDG'
+# historically these were given as numbers (with A = 1)
 rts = ['Beta','VI','I','III']
+# space separated string should suffice here
 rfs = 'B-Thin'
 plugs = 'BQ CR DI EJ KW MT OS PX UZ GH'
 t = time.clock()
