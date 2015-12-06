@@ -1,6 +1,7 @@
 http://www.enigma.hoerenberg.com/
 description of technique used to break third message (pdf)
 many deciphered enigma messages included
+WinEnigma and TBreaker mentioned but not linked
 
 http://people.physik.hu-berlin.de/~palloks/js/enigma/index_en.html
 universal enigma simulator lots of tables not found elsewhere
@@ -28,4 +29,8 @@ cipher challenge includes undeciphered text
 http://www.matematiksider.dk/enigma_eng.html
 in excel vba
 
+http://practicalcryptography.com/cryptanalysis/breaking-machine-ciphers/cryptanalysis-enigma/
+ignores plugboard and uses quadgrams to test brute-force decryptions
 
+https://www.cryptool.org/en/cryptool2
+enigma and more functionality
