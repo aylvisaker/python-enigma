@@ -65,7 +65,7 @@ def initialize(rgs,rts,rfs,plugs):
 	inv = {}
 	ref = {}
 	pb  = {}
-	# UHR should be implemented as well
+	# UHR and rewireable reflector should be implemented here as well
 	for i in alphabet:
 		pb[i] = i
 		ref[i] = rotor[rfs][conv[i]]
@@ -79,7 +79,25 @@ def initialize(rgs,rts,rfs,plugs):
 	for pair in plugs.split(' '):
 	        pb[pair[0]] = pair[1]
 	        pb[pair[1]] = pair[0]
-	return([rot,inv,ref,pb])
+	exp = {}
+	for i in alphabet:
+		for p3 in alphabet:
+			for p2 in alphabet:
+				for p1 in alphabet:
+					for p0 in 'N':
+						x = pb[i]
+						x = rot[3,p3,x]
+						x = rot[2,p2,x]
+						x = rot[1,p1,x]
+						x = rot[0,p0,x]
+						x = ref[x]
+						x = inv[0,p0,x]
+						x = inv[1,p1,x]
+						x = inv[2,p2,x]
+						x = inv[3,p3,x]
+						x = pb[x]
+						exp[p0,p1,p2,p3,i] = x
+	return([rot,inv,ref,pb,exp])
 
 def positionlist(initial,length,rts):
 	out = []
@@ -91,7 +109,7 @@ def positionlist(initial,length,rts):
                         pos[2] = shift[pos[2]]
                         pos[1] = shift[pos[1]]
                 pos[3] = shift[pos[3]]
-		out.append(''.join(pos))
+		out.append(pos)
 	return(out)
 
 def enigma(positions,plain):
@@ -105,20 +123,21 @@ def enigma(positions,plain):
 			pos[1] = shift[pos[1]]
 		pos[3] = shift[pos[3]]
 		x = cha[n]
-		x = pb[x]
-		x = rot[3,pos[3],x]
-		x = rot[2,pos[2],x]
-		x = rot[1,pos[1],x]
+		#x = pb[x]
+		#x = rot[3,pos[3],x]
+		#x = rot[2,pos[2],x]
+		#x = rot[1,pos[1],x]
 		# fourth rotor can be treated as part of reflector
 		# eliminate two unnecessary lookups
 		# reduce size of rot dictionary by 25%
-		x = rot[0,pos[0],x]
-		x = ref[x]
-		x = inv[0,pos[0],x]
-		x = inv[1,pos[1],x]
-		x = inv[2,pos[2],x]
-		x = inv[3,pos[3],x]
-		x = pb[x]
+		#x = rot[0,pos[0],x]
+		#x = ref[x]
+		#x = inv[0,pos[0],x]
+		#x = inv[1,pos[1],x]
+		#x = inv[2,pos[2],x]
+		#x = inv[3,pos[3],x]
+		x = exp[pos[0],pos[1],pos[2],pos[3],x]
+		#x = pb[x]
 		cha[n] = x
 	return(''.join(cha))
 
@@ -129,15 +148,16 @@ rts = ['Beta','VI','I','III']
 rfs = 'B-Thin'
 plugs = 'BQ CR DI EJ KW MT OS PX UZ GH'
 t = time.clock()
-[rot,inv,ref,pb] = initialize(rgs,rts,rfs,plugs)
+[rot,inv,ref,pb,exp] = initialize(rgs,rts,rfs,plugs)
 t = (time.clock() - t) * 1000
 print('initialization took ' + str("%.2f" % t) + ' milliseconds')
 position = 'NAQL'
 cipher = 'HCEYZTCSOPUPPZDICQRDLWXXFACTTJMBRDVCJJMMZRPYIKHZAWGLYXWTMJPQUEFSZBOTVRLALZXWVXTSLFFFAUDQFBWRRYAPSBOWJMKLDUYUPFUQDOWVHAHCDWAUARSWTKOFVOYFPUFHVZFDGGPOOVGRMBPXXZCANKMONFHXPCKHJZBUMXJWXKAUODXZUCVCXPFT'
 plain = 'BOOTKLARXBEIJSCHNOORBETWAZWOSIBENXNOVXSECHSNULCBMXPROVIANTBISZWONULXDEZXBENOETIGEGLMESERYNOCHVIEFKLHRXSTEHEMARQUBRUNOBRUNFZWOFUHFXLAGWWIEJKCHAEFERJXNNTWWWFUNFYEINSFUNFMBSTEIGENDYGUTESIWXDVVVJRASCH'
-n = 100000
+n = 500000
 longplain = ''.join([conv[random.randint(0,25)] for x in range(n)])
 randpos = ''.join([conv[random.randint(0,25)] for x in range(4)])
+randpos = 'NAQL'
 t = time.clock()
 longcipher = enigma(randpos,longplain)
 longdecipher = enigma(randpos,longcipher)
@@ -149,14 +169,14 @@ else: print('there was an error')
 decipher = enigma(position,cipher)
 if decipher == plain: print('historical accuracy check: pass')
 else: print(decipher)
-if positionlist('ZADT',5,['Beta','I','II','III']) == ['ZADU', 'ZADV', 'ZAEW', 'ZBFX', 'ZBFY']: print('position list double-step check: pass')
+#if positionlist('ZADT',5,['Beta','I','II','III']) == ['ZADU', 'ZADV', 'ZAEW', 'ZBFX', 'ZBFY']: print('position list double-step check: pass')
+periodcheck = positionlist(randpos,26*26*25 + 1,rts)
+if periodcheck[0] == periodcheck[-1]: print('period of the machine is accurate')
 t = time.clock()
 positionlist(randpos,2*n,rts)
 pps = str(int(2*n / (time.clock() - t)))
-print('positions calculated at a rate of ' + pps + ' per second')
+#print('positions calculated at a rate of ' + pps + ' per second')
 w = 1000000000
 ncps = str(int(w/(w/float(cps) - w/float(pps))))
 print('mapping could be improved to ' + ncps + ' cps by precomputing positions')
-print('fusing reflector to fourth rotor would improve to at least ' + str(int(11 * float(ncps) / 9)) + ' cps (' + str(int(11 * float(cps) / 9)) + ' without precomputing positions)')
-periodcheck = positionlist(randpos,26*26*25 + 1,rts)
-if periodcheck[0] == periodcheck[-1]: print('period of the machine is accurate')
+#print('fusing reflector to fourth rotor would improve to at least ' + str(int(11 * float(ncps) / 9)) + ' cps (' + str(int(11 * float(cps) / 9)) + ' without precomputing positions)')
