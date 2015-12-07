@@ -19,21 +19,6 @@ for p in alphabet:
 	shift[p] = conv[(conv[p] + 1) % 26]
 
 rotor = {}
-notch = {}
-# notch settings for the following are unknown
-#rotor['IC']     = 'DMTWSILRUYQNKFEJCAZBPGXOHV'
-#rotor['IIC']    = 'HQZGPJTMOBLNCIFDYAWVEUSRKX'
-#rotor['IIIC']   = 'UQNTLSZFMREHDPXKIBVYGJCWOA'
-#rotor['I-r']    = 'JGDQOXUSCAMIFRVTPNEWKBLZYH'
-#rotor['II-r']   = 'NTZPSFBOKMWRCJDIVLAEYUXHGQ'
-#rotor['III-r']  = 'JVIUBHTCDYAKEQZPOSGXNRMWFL'
-#rotor['UKW-r']  = 'QYHOGNECVPUZTFDJAXWMKISRBL'
-#rotor['ETW-r']  = 'QWERTZUIOASDFGHJKPYXCVBNML'
-#rotor['I-K']    = 'PEZUOHXSCVFMTBGLRINQJWAYDK'
-#rotor['II-K']   = 'ZOUESYDKFWPCIQXHMVBLGNJRAT'
-#rotor['III-K']  = 'EHRVXGAOBQUSIMZFLYNWKTPDJC'
-#rotor['UKW-K']  = 'IMETCGFRAYSQBZXWLHKDVUPOJN'
-#rotor['ETW-K']  = 'QWERTZUIOASDFGHJKPYXCVBNML'
 rotor['I']      = 'EKMFLGDQVZNTOWYHXUSPAIBRCJ'
 rotor['II']     = 'AJDKSIRUXBLHWTMCQGZNPYFVOE'
 rotor['III']    = 'BDFHJLCPRTXVZNYEIWGAKMUSQO'
@@ -42,7 +27,7 @@ rotor['V']      = 'VZBRGITYUPSDNHLXAWMJQOFECK'
 rotor['VI']     = 'JPGVOUMFYQBENHZRDKASXLICTW'
 rotor['VII']    = 'NZJHGRCXMYSWBOUFAIVLPEKQDT'
 rotor['VIII']   = 'FKQHTLXOCBJSPDZRAMEWNIUYGV'
-# reflectors and greek rotors do not require notch settings
+# reflectors and greek rotors (do not require notch settings)
 rotor['Beta']   = 'LEYJVCNIXWPBQMDRTAKZGFUHOS'
 rotor['Gamma']  = 'FSOKANUERHMBTIYCWLQPZXVGJD'
 rotor['A']      = 'EJMZALYXVBWFCRQUONTSPIKHGD'
@@ -50,7 +35,8 @@ rotor['B']      = 'YRUHQSLDPXNGOKMIEBFZCWVJAT'
 rotor['C']      = 'FVPJIAOYEDRZXWGCTKUQSBNMHL'
 rotor['B-Thin'] = 'ENKQAUYWJICOPBLMDXZVFTHRGS'
 rotor['C-Thin'] = 'RDOBJNTKVEHMLFCWZAXGYIPSUQ'
-rotor['Dum']    = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+rotor['ETW']    = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+notch = {}
 notch['I']      = ['Q']
 notch['II']     = ['E']
 notch['III']    = ['V']
@@ -60,12 +46,16 @@ notch['VI']     = ['Z','M']
 notch['VII']    = ['Z','M']
 notch['VIII']   = ['Z','M']
 
-def initialize(rgs,rts,rfs,plugs):
+# needs to be broken into two parts
+# part one: main rotors, plugboard, and nextpos
+# part two: greek rotor and reflector
+# UHR and rewireable reflector go here
+def initialize(rgs,rots,rfs,plugs,po):
+	rts = rots.split(' ')
 	rot = {}
 	inv = {}
 	ref = {}
 	pb  = {}
-	# UHR and rewireable reflector should be implemented here as well
 	for i in alphabet:
 		pb[i] = i
 		ref[i] = rotor[rfs][conv[i]]
@@ -76,107 +66,91 @@ def initialize(rgs,rts,rfs,plugs):
 				rr = [conv[x] for x in rotor[rts[r]]]
 				rot[r,p,i] = conv[(rr[(ii + pp) % 26] - pp) % 26]
 				inv[r,p,rot[r,p,i]] = i
+	if plugs == '': plugs = 'AA'
 	for pair in plugs.split(' '):
 	        pb[pair[0]] = pair[1]
 	        pb[pair[1]] = pair[0]
 	exp = {}
 	for i in alphabet:
+		w = pb[i]
 		for p3 in alphabet:
+			x = rot[3,p3,w]
 			for p2 in alphabet:
+				y = rot[2,p2,x]
 				for p1 in alphabet:
-					for p0 in 'N':
-						x = pb[i]
-						x = rot[3,p3,x]
-						x = rot[2,p2,x]
-						x = rot[1,p1,x]
-						x = rot[0,p0,x]
-						x = ref[x]
-						x = inv[0,p0,x]
-						x = inv[1,p1,x]
-						x = inv[2,p2,x]
-						x = inv[3,p3,x]
-						x = pb[x]
-						exp[p0,p1,p2,p3,i] = x
-	return([rot,inv,ref,pb,exp])
-
-def positionlist(initial,length,rts):
-	out = []
-	pos = list(initial)
-	for n in range(length):
-		if pos[3] in notch[rts[3]]:
-                        pos[2] = shift[pos[2]]
-                elif pos[2] in notch[rts[2]]:
-                        pos[2] = shift[pos[2]]
-                        pos[1] = shift[pos[1]]
-                pos[3] = shift[pos[3]]
-		out.append(pos)
-	return(out)
+					z = rot[1,p1,y]
+					z = rot[0,po[0],z]
+					z = ref[z]
+					z = inv[0,po[0],z]
+					z = inv[1,p1,z]
+					z = inv[2,p2,z]
+					z = inv[3,p3,z]
+					z = pb[z]
+					exp[''.join([po[0] + p1 + p2 + p3]),i] = z
+	nextpos = {}
+	for i in alphabet:
+		for j in alphabet:
+			for k in alphabet:
+				inpt = po[0] + i + j + k
+				pos = list(inpt)
+				if pos[3] in notch[rts[3]]:
+		                        pos[2] = shift[pos[2]]
+                		elif pos[2] in notch[rts[2]]:
+                        		pos[2] = shift[pos[2]]
+                        		pos[1] = shift[pos[1]]
+                		pos[3] = shift[pos[3]]
+				outpt = ''.join(pos)
+				nextpos[inpt] = outpt
+	return([nextpos,exp])
 
 def enigma(positions,plain):
-	pos = list(positions)
+	pos = positions[:]
 	cha = list(plain)
+	x = positions[0]
 	for n in range(len(cha)):
-		if pos[3] in notch[rts[3]]:
-			pos[2] = shift[pos[2]]
-		elif pos[2] in notch[rts[2]]:
-			pos[2] = shift[pos[2]]
-			pos[1] = shift[pos[1]]
-		pos[3] = shift[pos[3]]
-		x = cha[n]
-		#x = pb[x]
-		#x = rot[3,pos[3],x]
-		#x = rot[2,pos[2],x]
-		#x = rot[1,pos[1],x]
-		# fourth rotor can be treated as part of reflector
-		# eliminate two unnecessary lookups
-		# reduce size of rot dictionary by 25%
-		#x = rot[0,pos[0],x]
-		#x = ref[x]
-		#x = inv[0,pos[0],x]
-		#x = inv[1,pos[1],x]
-		#x = inv[2,pos[2],x]
-		#x = inv[3,pos[3],x]
-		x = exp[pos[0],pos[1],pos[2],pos[3],x]
-		#x = pb[x]
-		cha[n] = x
+		pos = nextpos[pos]
+		cha[n] = exp[pos,cha[n]]
 	return(''.join(cha))
 
-rgs = 'ZZDG'
-# historically these were given as numbers (with A = 1)
-rts = ['Beta','VI','I','III']
-# space separated string should suffice here
+# check the machine against the RASCH message
+rgs = 'ZZDG' # historically given as numbers with A = 1 ... Z = 26
+rts = 'Beta VI I III'
 rfs = 'B-Thin'
 plugs = 'BQ CR DI EJ KW MT OS PX UZ GH'
-t = time.clock()
-[rot,inv,ref,pb,exp] = initialize(rgs,rts,rfs,plugs)
-t = (time.clock() - t) * 1000
-print('initialization took ' + str("%.2f" % t) + ' milliseconds')
 position = 'NAQL'
-cipher = 'HCEYZTCSOPUPPZDICQRDLWXXFACTTJMBRDVCJJMMZRPYIKHZAWGLYXWTMJPQUEFSZBOTVRLALZXWVXTSLFFFAUDQFBWRRYAPSBOWJMKLDUYUPFUQDOWVHAHCDWAUARSWTKOFVOYFPUFHVZFDGGPOOVGRMBPXXZCANKMONFHXPCKHJZBUMXJWXKAUODXZUCVCXPFT'
-plain = 'BOOTKLARXBEIJSCHNOORBETWAZWOSIBENXNOVXSECHSNULCBMXPROVIANTBISZWONULXDEZXBENOETIGEGLMESERYNOCHVIEFKLHRXSTEHEMARQUBRUNOBRUNFZWOFUHFXLAGWWIEJKCHAEFERJXNNTWWWFUNFYEINSFUNFMBSTEIGENDYGUTESIWXDVVVJRASCH'
-n = 500000
-longplain = ''.join([conv[random.randint(0,25)] for x in range(n)])
-randpos = ''.join([conv[random.randint(0,25)] for x in range(4)])
-randpos = 'NAQL'
-t = time.clock()
-longcipher = enigma(randpos,longplain)
-longdecipher = enigma(randpos,longcipher)
-cps = str(int(2*n / (time.clock() - t)))
-print('mapping at ' + cps + ' characters per second')
-if longplain==longdecipher:
-	print('symmetric encryption test: pass')
-else: print('there was an error')
+[nextpos,exp] = initialize(rgs,rts,rfs,plugs,position)
+cipher = ('HCEYZTCSOPUPPZDICQRDLWXXFACTTJMBRDVCJJMMZRPYIKHZAWGLYXWTMJPQUEFSZBOTVR'
+	'LALZXWVXTSLFFFAUDQFBWRRYAPSBOWJMKLDUYUPFUQDOWVHAHCDWAUARSWTKOFVOYFPUFHVZ'
+	'FDGGPOOVGRMBPXXZCANKMONFHXPCKHJZBUMXJWXKAUODXZUCVCXPFT')
+plain  = ('BOOTKLARXBEIJSCHNOORBETWAZWOSIBENXNOVXSECHSNULCBMXPROVIANTBISZWONULXDE'
+	'ZXBENOETIGEGLMESERYNOCHVIEFKLHRXSTEHEMARQUBRUNOBRUNFZWOFUHFXLAGWWIEJKCHA'
+	'EFERJXNNTWWWFUNFYEINSFUNFMBSTEIGENDYGUTESIWXDVVVJRASCH')
 decipher = enigma(position,cipher)
-if decipher == plain: print('historical accuracy check: pass')
-else: print(decipher)
-#if positionlist('ZADT',5,['Beta','I','II','III']) == ['ZADU', 'ZADV', 'ZAEW', 'ZBFX', 'ZBFY']: print('position list double-step check: pass')
-periodcheck = positionlist(randpos,26*26*25 + 1,rts)
-if periodcheck[0] == periodcheck[-1]: print('period of the machine is accurate')
-t = time.clock()
-positionlist(randpos,2*n,rts)
-pps = str(int(2*n / (time.clock() - t)))
-#print('positions calculated at a rate of ' + pps + ' per second')
-w = 1000000000
-ncps = str(int(w/(w/float(cps) - w/float(pps))))
-print('mapping could be improved to ' + ncps + ' cps by precomputing positions')
-#print('fusing reflector to fourth rotor would improve to at least ' + str(int(11 * float(ncps) / 9)) + ' cps (' + str(int(11 * float(cps) / 9)) + ' without precomputing positions)')
+if decipher == plain: print('successfully decrypted historical message')
+
+# benchmark tests for initialization and mapping speed
+n = 1000000
+rgs = ''.join([conv[random.randint(0,25)] for x in range(4)])
+rts = random.choice(['Beta ','Gamma ']) + ' '.join(random.sample(['I','II','III','IV','V','VI','VII'],3))
+rfs = random.choice(['B-Thin','C-Thin'])
+cables = random.randint(0,13)
+plugorder = random.sample(alphabet,26)
+p = [''.join(plugorder[i:i+2]) for i in range(0,25,2)]
+plugs = ' '.join(random.sample(p,cables))
+position = ''.join([conv[random.randint(0,25)] for x in range(4)])
+plain = ''.join([conv[random.randint(0,25)] for x in range(n)])
+t1 = time.clock()
+[nextpos,exp] = initialize(rgs,rts,rfs,plugs,position)
+t1 = (time.clock() - t1) * 1000
+print('initialization took ' + str('%.2f' % t1) + ' milliseconds')
+t2 = time.clock()
+cipher = enigma(position,plain)
+decipher = enigma(position,cipher)
+t2 = time.clock() - t2
+cps = str(int(2*n / t2))
+if plain == decipher:
+	print('mapping at ' + cps + ' characters per second')
+	upper = (250*26*26*26/float(cps) + t1/1000)*26
+	print('upper bound on bombe run ' + str('%.2f' % upper) + ' seconds')
+else: print(' '.join(['there was an error!',rgs,rts,rfs,plugs,position]))
+
