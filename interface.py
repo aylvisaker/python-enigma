@@ -1,5 +1,5 @@
 import enigma
-import tkinter as tk
+import Tkinter as tk
 
 def onKeyPress(event):
     global plain, cipher, current
