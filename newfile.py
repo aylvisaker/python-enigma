@@ -181,12 +181,12 @@ def benchmark(n):
     decipher = enigma(position,cipher)
     t2 = time.clock() - t2
     cps = str(int(2*n / t2))
-    kps = str(int(2*n / t2 / 250))
+    cpk = 250 # + 250 # maximum length plaintext and ciphertext
+    kps = str(int(2*n / t2 / cpk))
     if plain == decipher:
         print('mapping at ' + cps + ' characters per second = ' + kps + ' keys per second.')
-        characters = 250 + 250 # maximum length plaintext and ciphertext
-        upper = (characters*26**3/float(cps) + t1/1000)*26 * 2*2*(8*7*6 - 5*4*3) / (3600*24)
-        bound = (characters*26**3/float(cps) + t1/1000)*26 / 60
+        upper = (cpk*26**3/float(cps) + t1/1000)*26 * 2*2*(8*7*6 - 5*4*3) / (3600*24)
+        bound = (cpk*26**3/float(cps) + t1/1000)*26 / 60
         print('lower bound on worst-case bombe run ' + str('%.2f' % upper) + ' days (ignoring steckerbrett and ringstellung)')
         print('single day-settings run ' + str('%.2f' % bound) + ' minutes (ignoring steckerbrett and ringstellung)')
     else: print(' '.join(['there was an error!',rgs,rts,rfs,plugs,position]))
