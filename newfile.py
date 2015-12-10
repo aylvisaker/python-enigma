@@ -35,12 +35,12 @@ rotor['VII']    = 'NZJHGRCXMYSWBOUFAIVLPEKQDT'
 rotor['VIII']   = 'FKQHTLXOCBJSPDZRAMEWNIUYGV'
 rotor['Beta']   = 'LEYJVCNIXWPBQMDRTAKZGFUHOS'
 rotor['Gamma']  = 'FSOKANUERHMBTIYCWLQPZXVGJD'
-rotor['A']      = 'EJMZALYXVBWFCRQUONTSPIKHGD'
-rotor['B']      = 'YRUHQSLDPXNGOKMIEBFZCWVJAT'
-rotor['C']      = 'FVPJIAOYEDRZXWGCTKUQSBNMHL'
+#rotor['A']      = 'EJMZALYXVBWFCRQUONTSPIKHGD'
+#rotor['B']      = 'YRUHQSLDPXNGOKMIEBFZCWVJAT'
+#rotor['C']      = 'FVPJIAOYEDRZXWGCTKUQSBNMHL'
 rotor['B-Thin'] = 'ENKQAUYWJICOPBLMDXZVFTHRGS'
 rotor['C-Thin'] = 'RDOBJNTKVEHMLFCWZAXGYIPSUQ'
-rotor['ETW']    = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+#rotor['ETW']    = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 notch = {}
 notch['I']      = ['Q']
 notch['II']     = ['E']
@@ -56,7 +56,7 @@ notch['VIII']   = ['Z','M']
 # part two: greek rotor and reflector
 # UHR, UKW-D, and ETW go here
 # UHR wiring found at http://people.physik.hu-berlin.de/~palloks/js/enigma/index_en.html
-# default values for each
+# default values for each variable
 # should handle 3 rotor machine as well, warning for historical consistency
 def initialize(rgs,rts,rfs,plugs,po):
     rts = rts.split(' ')
@@ -105,7 +105,7 @@ def initialize(rgs,rts,rfs,plugs,po):
             for k in alphabet:
                 inpt = po[0] + i + j + k
                 pos = list(inpt)
-                # in is O(1) instead of O(n) for dictionaries. just sayin'.
+                # in is O(1) for deques and O(n) for dictionaries
                 if pos[3] in notch[rts[3]]:
                     pos[2] = shift[pos[2]]
                 elif pos[2] in notch[rts[2]]:
