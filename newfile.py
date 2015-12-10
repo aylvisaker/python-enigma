@@ -1,5 +1,3 @@
-import random
-import time
 # https://docs.python.org/2/library/collections.html#collections.deque
 # append and pop from either side in O(1) time
 # list objects copy and incur O(n) memory movement costs
@@ -20,7 +18,6 @@ for i in range(26):
 shift = {}
 for p in alphabet:
     shift[p] = conv[(conv[p] + 1) % 26]
-
 
 # wiring and historical data found at:
 # http://www.cryptomuseum.com/crypto/enigma/index.htm
@@ -54,8 +51,10 @@ notch['VIII']   = ['Z','M']
 # needs to be broken into two parts
 # part one: main rotors, plugboard, and nextpos
 # part two: greek rotor and reflector
+
 # UHR, UKW-D, and ETW go here
 # UHR wiring found at http://people.physik.hu-berlin.de/~palloks/js/enigma/index_en.html
+
 # default values for each variable
 # should handle 3 rotor machine as well, warning for historical consistency
 def initialize(rgs,rts,rfs,plugs,po):
@@ -137,49 +136,60 @@ def enigma(positions,plain):
 
 # check the machine against the RASCH message
 # make this a function. read messages from text file
-rgs = 'ZZDG' # historically given as numbers with A = 1 ... Z = 26
-rts = 'Beta VI I III'
-rfs = 'B-Thin'
-plugs = 'BQ CR DI EJ KW MT OS PX UZ GH'
-position = 'NAQL'
-[nextpos,exp] = initialize(rgs,rts,rfs,plugs,position)
-cipher = ('HCEYZTCSOPUPPZDICQRDLWXXFACTTJMBRDVCJJMMZRPYIKHZAWGLYXWTMJPQUEFSZBOTVR'
-    'LALZXWVXTSLFFFAUDQFBWRRYAPSBOWJMKLDUYUPFUQDOWVHAHCDWAUARSWTKOFVOYFPUFHVZ'
-    'FDGGPOOVGRMBPXXZCANKMONFHXPCKHJZBUMXJWXKAUODXZUCVCXPFT')
-plain  = ('BOOTKLARXBEIJSCHNOORBETWAZWOSIBENXNOVXSECHSNULCBMXPROVIANTBISZWONULXDE'
-    'ZXBENOETIGEGLMESERYNOCHVIEFKLHRXSTEHEMARQUBRUNOBRUNFZWOFUHFXLAGWWIEJKCHA'
-    'EFERJXNNTWWWFUNFYEINSFUNFMBSTEIGENDYGUTESIWXDVVVJRASCH')
-decipher = enigma(position,cipher)
-if decipher == plain: print('successfully decrypted historical message')
+def accuracycheck():
+    global nextpos
+    global exp
+    rgs = 'ZZDG' # historically given as numbers with A = 1 ... Z = 26
+    rts = 'Beta VI I III'
+    rfs = 'B-Thin'
+    plugs = 'BQ CR DI EJ KW MT OS PX UZ GH'
+    position = 'NAQL'
+    [nextpos,exp] = initialize(rgs,rts,rfs,plugs,position)
+    cipher = ('HCEYZTCSOPUPPZDICQRDLWXXFACTTJMBRDVCJJMMZRPYIKHZAWGLYXWTMJPQUEFSZBOTVR'
+        'LALZXWVXTSLFFFAUDQFBWRRYAPSBOWJMKLDUYUPFUQDOWVHAHCDWAUARSWTKOFVOYFPUFHVZ'
+        'FDGGPOOVGRMBPXXZCANKMONFHXPCKHJZBUMXJWXKAUODXZUCVCXPFT')
+    plain  = ('BOOTKLARXBEIJSCHNOORBETWAZWOSIBENXNOVXSECHSNULCBMXPROVIANTBISZWONULXDE'
+        'ZXBENOETIGEGLMESERYNOCHVIEFKLHRXSTEHEMARQUBRUNOBRUNFZWOFUHFXLAGWWIEJKCHA'
+        'EFERJXNNTWWWFUNFYEINSFUNFMBSTEIGENDYGUTESIWXDVVVJRASCH')
+    decipher = enigma(position,cipher)
+    if decipher == plain: print('successfully decrypted historical message')
 
 # benchmark tests for initialization and mapping speed
-# turn this into a function of n
-# move import of time and random here
-n = 1000000
-rgs = ''.join([conv[random.randint(0,25)] for x in range(4)])
-rts = random.choice(['Beta ','Gamma ']) + ' '.join(random.sample(['I','II','III','IV','V','VI','VII'],3))
-rfs = random.choice(['B-Thin','C-Thin'])
-cables = random.randint(0,13)
-plugorder = random.sample(alphabet,26)
-p = [''.join(plugorder[i:i+2]) for i in range(0,25,2)]
-plugs = ' '.join(random.sample(p,cables))
-position = ''.join([conv[random.randint(0,25)] for x in range(4)])
-plain = ''.join([conv[random.randint(0,25)] for x in range(n)])
-t1 = time.clock()
-[nextpos,exp] = initialize(rgs,rts,rfs,plugs,position)
-t1 = (time.clock() - t1) * 1000
-print('initialization took ' + str('%.2f' % t1) + ' milliseconds.')
-t2 = time.clock()
-cipher = enigma(position,plain)
-decipher = enigma(position,cipher)
-t2 = time.clock() - t2
-cps = str(int(2*n / t2))
-kps = str(int(2*n / t2 / 250))
-if plain == decipher:
-    print('mapping at ' + cps + ' characters per second = ' + kps + ' keys per second.')
-    upper = (250*26**3/float(cps) + t1/1000)*26 * 2*2*(8*7*6 - 5*4*3) / (3600*24)
-    print('lower bound on worst-case bombe run ' + str('%.2f' % upper) + ' days (ignoring steckerbrett and ringstellung)')
-else: print(' '.join(['there was an error!',rgs,rts,rfs,plugs,position]))
+def benchmark(n):
+    import random
+    import time
+    global nextpos
+    global exp
+    t0 = time.clock()
+    rgs = ''.join([conv[random.randint(0,25)] for x in range(4)])
+    rts = random.choice(['Beta ','Gamma ']) + ' '.join(random.sample(['I','II','III','IV','V','VI','VII'],3))
+    rfs = random.choice(['B-Thin','C-Thin'])
+    cables = random.randint(0,13)
+    plugorder = random.sample(alphabet,26)
+    p = [''.join(plugorder[i:i+2]) for i in range(0,25,2)]
+    plugs = ' '.join(random.sample(p,cables))
+    position = ''.join([conv[random.randint(0,25)] for x in range(4)])
+    plain = ''.join([conv[random.randint(0,25)] for x in range(n)])
+    t0 = (time.clock() - t0) * 1000
+    print('generating random settings and ' + str(n) + ' random characters took ' + str('%.2f' % t0) + ' miliseconds')
+    t1 = time.clock()
+    [nextpos,exp] = initialize(rgs,rts,rfs,plugs,position)
+    t1 = (time.clock() - t1) * 1000
+    print('initialization took ' + str('%.2f' % t1) + ' milliseconds')
+    t2 = time.clock()
+    cipher = enigma(position,plain)
+    decipher = enigma(position,cipher)
+    t2 = time.clock() - t2
+    cps = str(int(2*n / t2))
+    kps = str(int(2*n / t2 / 250))
+    if plain == decipher:
+        print('mapping at ' + cps + ' characters per second = ' + kps + ' keys per second.')
+        characters = 250 + 250 # maximum length plaintext and ciphertext
+        upper = (characters*26**3/float(cps) + t1/1000)*26 * 2*2*(8*7*6 - 5*4*3) / (3600*24)
+        bound = (characters*26**3/float(cps) + t1/1000)*26 / 60
+        print('lower bound on worst-case bombe run ' + str('%.2f' % upper) + ' days (ignoring steckerbrett and ringstellung)')
+        print('single day-settings run ' + str('%.2f' % bound) + ' minutes (ignoring steckerbrett and ringstellung)')
+    else: print(' '.join(['there was an error!',rgs,rts,rfs,plugs,position]))
 
 # bombe code goes here see myenigma.py for help
 # required arguments should be restricted to a message and plaintext
@@ -190,8 +200,33 @@ else: print(' '.join(['there was an error!',rgs,rts,rfs,plugs,position]))
 
 # command line options go here
 # call historical check and benchmark checks if no arguments
-# arguments for ciphertext and plaintext
+# arguments for ciphertext, plaintext, rotors, rings, ground, plug
 # import messages from http://www.enigma.hoerenberg.com/
-# detect plaintext input and offer to decrypt
-# 
+# detect plaintext input and offer to encrypt
+import sys, getopt
+def main(argv):
+    if argv == []:
+        accuracycheck()
+        sys.exit()
+    inputfile = 'input.txt'
+    outputfile = 'output.txt'
+    try:
+        opts, args = getopt.getopt(argv,"hi:o:b:",["ifile=","ofile=","benchmark="])
+    except getopt.GetoptError:
+        print('options error')
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            print('newfile.py -i <inputfile> -o <outputfile>')
+            sys.exit()
+        elif opt in ("-i", "--ifile"):
+            inputfile = arg
+        elif opt in ("-o", "--ofile"):
+            outputfile = arg
+        elif opt in ("-b", "--benchmark"):
+            benchmark(int(arg))
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
+
 # error handling: https://docs.python.org/2/tutorial/errors.html
