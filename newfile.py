@@ -66,7 +66,7 @@ def initialize(rgs,rts,rfs,plugs,po):
     ref = {}
     pb  = {}
     if len(rts) == 3: 
-	rts.insert(0,'ETW')
+        rts.insert(0,'ETW')
         rgs = 'A' + rgs
         po = 'A' + po
     for i in alphabet:
