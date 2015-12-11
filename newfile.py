@@ -32,12 +32,12 @@ rotor['VII']    = 'NZJHGRCXMYSWBOUFAIVLPEKQDT'
 rotor['VIII']   = 'FKQHTLXOCBJSPDZRAMEWNIUYGV'
 rotor['Beta']   = 'LEYJVCNIXWPBQMDRTAKZGFUHOS'
 rotor['Gamma']  = 'FSOKANUERHMBTIYCWLQPZXVGJD'
-#rotor['A']      = 'EJMZALYXVBWFCRQUONTSPIKHGD'
-#rotor['B']      = 'YRUHQSLDPXNGOKMIEBFZCWVJAT'
-#rotor['C']      = 'FVPJIAOYEDRZXWGCTKUQSBNMHL'
+rotor['A']      = 'EJMZALYXVBWFCRQUONTSPIKHGD'
+rotor['B']      = 'YRUHQSLDPXNGOKMIEBFZCWVJAT'
+rotor['C']      = 'FVPJIAOYEDRZXWGCTKUQSBNMHL'
 rotor['B-Thin'] = 'ENKQAUYWJICOPBLMDXZVFTHRGS'
 rotor['C-Thin'] = 'RDOBJNTKVEHMLFCWZAXGYIPSUQ'
-#rotor['ETW']    = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+rotor['ETW']    = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 notch = {}
 notch['I']      = ['Q']
 notch['II']     = ['E']
@@ -56,13 +56,19 @@ notch['VIII']   = ['Z','M']
 # UHR wiring found at http://people.physik.hu-berlin.de/~palloks/js/enigma/index_en.html
 
 # default values for each variable
-# should handle 3 rotor machine as well, warning for historical consistency
+# should handle 3 rotor machine as well
+# warning for historical consistency
+# ringstellung historically provided as numbers 1-26
 def initialize(rgs,rts,rfs,plugs,po):
     rts = rts.split(' ')
     rot = {}
     inv = {}
     ref = {}
     pb  = {}
+    if len(rts) == 3: 
+	rts.insert(0,'ETW')
+        rgs = 'A' + rgs
+        po = 'A' + po
     for i in alphabet:
         pb[i] = i
         ref[i] = rotor[rfs][conv[i]]
@@ -97,7 +103,7 @@ def initialize(rgs,rts,rfs,plugs,po):
                     z = inv[2,p2,z]
                     z = inv[3,p3,z]
                     z = pb[z]
-                    exp[''.join([po[0] + p1 + p2 + p3]),i] = z
+                    exp[po[0] + p1 + p2 + p3,i] = z
     nextpos = {}
     for i in alphabet:
         for j in alphabet:
@@ -124,6 +130,8 @@ def enigma(positions,plain):
     global nextpos
     global exp
     pos = positions[:]
+    if len(pos) == 3:
+        pos = 'A' + pos
     cha = list(plain)
     x = positions[0]
     for n in range(len(cha)):
@@ -139,20 +147,21 @@ def enigma(positions,plain):
 def accuracycheck():
     global nextpos
     global exp
-    rgs = 'ZZDG' # historically given as numbers with A = 1 ... Z = 26
-    rts = 'Beta VI I III'
-    rfs = 'B-Thin'
-    plugs = 'BQ CR DI EJ KW MT OS PX UZ GH'
-    position = 'NAQL'
-    [nextpos,exp] = initialize(rgs,rts,rfs,plugs,position)
-    cipher = ('HCEYZTCSOPUPPZDICQRDLWXXFACTTJMBRDVCJJMMZRPYIKHZAWGLYXWTMJPQUEFSZBOTVR'
-        'LALZXWVXTSLFFFAUDQFBWRRYAPSBOWJMKLDUYUPFUQDOWVHAHCDWAUARSWTKOFVOYFPUFHVZ'
-        'FDGGPOOVGRMBPXXZCANKMONFHXPCKHJZBUMXJWXKAUODXZUCVCXPFT')
-    plain  = ('BOOTKLARXBEIJSCHNOORBETWAZWOSIBENXNOVXSECHSNULCBMXPROVIANTBISZWONULXDE'
-        'ZXBENOETIGEGLMESERYNOCHVIEFKLHRXSTEHEMARQUBRUNOBRUNFZWOFUHFXLAGWWIEJKCHA'
-        'EFERJXNNTWWWFUNFYEINSFUNFMBSTEIGENDYGUTESIWXDVVVJRASCH')
-    decipher = enigma(position,cipher)
-    if decipher == plain: print('successfully decrypted historical message')
+    lines = [line.rstrip('\n') for line in open('historicalmessages.txt')]
+    while len(lines) > 8:
+        ident = lines.pop(0)
+        rfs   = lines.pop(0)
+        rts   = lines.pop(0)
+        plugs = lines.pop(0)
+        rgs   = ((lines.pop(0)).split(' '))[0]
+        position = ((lines.pop(0)).split(' '))[0]
+        cipher = lines.pop(0)
+        plain = lines.pop(0)
+        lines.pop(0)
+        [nextpos,exp] = initialize(rgs,rts,rfs,plugs,position)
+        decipher = enigma(position,cipher)
+        if decipher == plain: print('Successfully decrypted ' + ident)
+        else: print('Error decrypting ' + ident)
 
 # benchmark tests for initialization and mapping speed
 def benchmark(n):
