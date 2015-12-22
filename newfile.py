@@ -8,6 +8,7 @@
 #import collections
 #a = collections.deque([1,2,3,4,5])
 #a.rotate(-1)
+from collections import defaultdict
 
 alphabet = 'abcdefghijklmnopqrstuvwxyz'.upper()
 conv = {}
@@ -87,6 +88,13 @@ def initialize(rgs,rts,rfs,plugs,po):
     # usage would change to exp[p0][p1][p2][p3][i] = c
     # initialize all positions on all four rotors
     # c.f. http://stackoverflow.com/a/27809959
+    #keylist = []
+    #for i in alphabet:
+    #    for j in alphabet:
+    #        for k in alphabet:
+    #            for l in alphabet:
+    #                keylist.append((i+j+k,l))
+    #exp = defaultdict(keylist)
     exp = {}
     for i in alphabet:
         w = pb[i]
@@ -161,7 +169,10 @@ def accuracycheck():
         [nextpos,exp] = initialize(rgs,rts,rfs,plugs,position)
         decipher = enigma(position,cipher)
         if decipher == plain: print('Successfully decrypted ' + ident)
-        else: print('Error decrypting ' + ident)
+        else: 
+            print('Error decrypting ' + ident)
+            print(decipher)
+            print(plain)
 
 # benchmark tests for initialization and mapping speed
 def benchmark(n):
@@ -180,11 +191,12 @@ def benchmark(n):
     position = ''.join([conv[random.randint(0,25)] for x in range(4)])
     plain = ''.join([conv[random.randint(0,25)] for x in range(n)])
     t0 = (time.clock() - t0) * 1000
-    print('generating random settings and ' + str(n) + ' random characters took ' + str('%.2f' % t0) + ' miliseconds')
+    print('generating random message (and settings) took ' + str('%.2f' % t0) + ' milliseconds')
     t1 = time.clock()
     [nextpos,exp] = initialize(rgs,rts,rfs,plugs,position)
     t1 = (time.clock() - t1) * 1000
     print('initialization took ' + str('%.2f' % t1) + ' milliseconds')
+    #t1 = 20
     t2 = time.clock()
     cipher = enigma(position,plain)
     decipher = enigma(position,cipher)
@@ -193,11 +205,14 @@ def benchmark(n):
     cpk = 250 # + 250 # maximum length plaintext and ciphertext
     kps = str(int(2*n / t2 / cpk))
     if plain == decipher:
+        print()
         print('mapping at ' + cps + ' characters per second = ' + kps + ' keys per second.')
+        print()
         upper = (cpk*26**3/float(cps) + t1/1000)*26 * 2*2*(8*7*6 - 5*4*3) / (3600*24)
         bound = (cpk*26**3/float(cps) + t1/1000)*26 / 60
-        print('lower bound on worst-case bombe run ' + str('%.2f' % upper) + ' days (ignoring steckerbrett and ringstellung)')
-        print('single day-settings run ' + str('%.2f' % bound) + ' minutes (ignoring steckerbrett and ringstellung)')
+        print('ignoring steckerbrett and ringstellung:')
+        print('lower bound on worst-case bombe run ' + str('%.2f' % upper) + ' days')
+        print('single day-settings run ' + str('%.2f' % bound) + ' minutes')
     else: print(' '.join(['there was an error!',rgs,rts,rfs,plugs,position]))
 
 # bombe code goes here see myenigma.py for help
@@ -212,7 +227,6 @@ def benchmark(n):
 # arguments for ciphertext, plaintext, rotors, rings, ground, plug
 # import messages from http://www.enigma.hoerenberg.com/
 # detect plaintext input and offer to encrypt
-import sys, getopt
 def main(argv):
     if argv == []:
         accuracycheck()
@@ -236,6 +250,10 @@ def main(argv):
             benchmark(int(arg))
 
 if __name__ == "__main__":
+    import sys, getopt
     main(sys.argv[1:])
 
+# bomb idea: choose smallest prime, p, greater than message length and not
+#   a divisor of 26*26*25. pad message until length is p. now ciphertext can
+#   be set to 26*26*25 copies of padded message: all settings will be covered.
 # error handling: https://docs.python.org/2/tutorial/errors.html
