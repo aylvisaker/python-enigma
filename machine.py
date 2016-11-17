@@ -1,1 +1,1 @@
-print('hello world')cd
+print('hello world')
