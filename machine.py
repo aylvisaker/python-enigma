@@ -54,16 +54,24 @@ class enigma(object):
         :param plugboard: string with pairs of adjacent characters representing plugboard connections
         :param position: string representing position of the rotors
         """
+        # rotors is a list of dictionaries representing the machine's rotors.
         self.rotors = [{x: num[rotorCollection[rot][x]] for x in range(26)} for rot in rotors]
+        # rotorInverses is a list of dictionaries representing the reverse pathway through the rotors.
         self.rotorInverses = [{y: x for x, y in rot.items()} for rot in self.rotors]
+        # ringsettings is a list containing numerical values for the machine's ring settings.
         self.ringsettings = [num[x] for x in rings]
+        # notches is a list containing locations where the rotor triggers its left neighbor to rotate.
         self.notches = [[num[x] for x in notches[rot]] for rot in rotors]
+        # reflector is a dictionary representing the machine's reflector.
         self.reflector = {x: num[reflectorCollection[reflector][x]] for x in range(26)}
+        # plugboard is a dictinoary representing the machine's plugboard.
         self.plugBoard = {x: x for x in range(26)}
         for x in range(0, len(plugboard), 2):
             self.plugBoard[num[plugboard[x]]] = num[plugboard[x + 1]]
             self.plugBoard[num[plugboard[x + 1]]] = num[plugboard[x]]
+        # positions is a list containing the current position of the rotors
         self.positions = [num[x] for x in position]
+        # update all dictionaries so they can work modulo 26
         for i in range(26):
             for offset in [-52, -26, 26, 52]:
                 for rot in self.rotors:
@@ -86,17 +94,24 @@ class enigma(object):
         :param x: number in range(26) representing the key pressed
         :return: number in range(26) representing the light activated
         """
+        # If input is not a letter, don't do anything.
         if not x in range(26):
             return(x)
+        # Step the rotors by one position.
         self.stepRotors()
+        # Compute the offsets from positions and ring settings.
         offsets = [self.positions[i] - self.ringsettings[i] for i in range(len(self.positions))]
-        y = x
-        y = self.plugBoard[y]
+        # First pass through the plugboard.
+        y = self.plugBoard[x]
+        # Pass through the rotors from right to left.
         for off, rot in zip(offsets[::-1], self.rotors[::-1]):
             y = (rot[y + off] - off)
+        # Pass through the reflector
         y = self.reflector[y]
+        # Pass through the rotors from left to right.
         for off, rot in zip(offsets, self.rotorInverses):
             y = (rot[y + off] - off)
+        # Second pass through the plugboard.
         y = self.plugBoard[y]
         return y
 
@@ -105,11 +120,14 @@ class enigma(object):
         Steps the rotors by one position.
         """
         output = self.positions
+        # Check if the middle rotor has reached one of its notches.
         if self.positions[1] in self.notches[1]:
             output[0] = (output[0] + 1) % 26
             output[1] = (output[1] + 1) % 26
+        # Check if the rightmost rotor has reached one of its notches.
         if self.positions[2] in self.notches[2]:
             output[1] = (output[1] + 1) % 26
+        # Step the rightmost rotor.
         output[2] = (output[2] + 1) % 26
         self.positions = output
 
@@ -119,10 +137,12 @@ class enigma(object):
         :param message: Input (typed on the keyboard)
         :return: Output (read off the lightboard)
         """
+        # Convert the message to a list of integers if not done already.
         if not message[0] in range(26):
             output = convert(message)
         else:
             output = message
+        # Encrypt / decrypt the message.
         return [self.encryptCharacter(x) for x in output]
 
 def test():
@@ -154,12 +174,21 @@ def test():
     print 'Switching machine position ' + str(int(n / t)) + ' times per second'
     t = time.clock()
     ciphertext = convert(ciphertext)
+    ciphertext = convert(ciphertext)
     t = time.clock() - t
-    print 'Converting messages to numerical lists at ' + str(int(n / t)) + ' characters per second'
+    print 'Converting messages to numerical lists (and back) at ' + str(int(2 * n / t)) + ' characters per second'
+    n = 5000
+    t = time.clock()
+    for x in range(n):
+        machine = enigma(rotors, rings, reflector, plugboard, position)
+    t = time.clock() - t
+    print 'Initializing machines ' + str(int(n / t)) + ' times per second.'
 
 def main():
     if len(sys.argv) <= 1:
         test()
+    else:
+        print "I don't understand arguments yet."
 
 if __name__ == "__main__":
     main()
