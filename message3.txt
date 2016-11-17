@@ -1,0 +1,26 @@
+Ciphertext:
+HCEYZTCSOPUPPZDICQRDLWXXFACTTJMBRDVCJJMMZRPYIKHZAWGLYXWTMJPQUEFSZBOTVRLALZXWVXTSLFFFAUDQFBWRRYAPSBOWJMKLDUYUPFUQDOWVHAHCDWAUARSWTKOFVOYFPUFHVZFDGGPOOVGRMBPXXZCANKMONFHXPCKHJZBUMXJWXKAUODXZUCVCXPFT
+
+Enigma Machine Settings:
+Reflector: B 
+“Greek” Wheel: Beta 
+Wheels: 613 
+Ring Settings: ZZDG 
+Message Key: NAQL 
+Plugs: BQ CR DI EJ KW MT OS PX UZ GH 
+
+Alternate Ring Settings and Message Key:
+Ring Settings: ZZTG 
+Message Key: NBHL
+
+Plaintext:
+BOOTKLARXBEIJSCHNOORBETWAZWOSIBENXNOVXSECHSNULCBMXPROVIANTBISZWONULXDEZXBENOETIGEGLMESERYNOCHVIEFKLHRXSTEHEMARQUBRUNOBRUNFZWOFUHFXLAGWWIEJKCHAEFERJXNNTWWWFUNFYEINSFUNFMBSTEIGENDYGUTESIWXDVVVJRASCH
+
+Plaintext with word divisions, and with garbled letters corrected:
+BOOT KLAR X BEI J SCHNOOR J ETWA ZWO SIBEN X NOV X SECHS NUL CBM X PROVIANT BIS ZWO NUL X DEZ X BENOETIGE GLAESER Y NOCH VIER KLAR X STEHE MARQU BRUNO BRUNO ZWO FUNF X LAGE WIE J SCHAEFER J X NNN WWW FUNF Y EINS FUNF MB STEIGEND Y GUTE SICHT VVV J RASCH 
+
+Formatted German plaintext: 
+Boot klar. Bei “Schnoor” etwa 27. Nov. 60 cbm. Proviant bis 20 Dez. Benötige Gläser, noch 4 klar. Stehe Marqu. BB 25. Lage wie “Schaefer”. NW 5, 15 mb steigend, gute Sicht. Von “Rasch”. 
+
+English translation (words in square brackets added to make the meaning more clear): 
+Boat clear. [Will rendezvous] at Schnoor about 27 November. 60 cubic meters [fuel oil remaining], provisions [sufficient] until 20 December. Need binoculars; [only] four now serviceable. Am at naval square BB 25. Situation like Schaefer’s. [Wind] northwest [force] 5, [atmospheric pressure] 15 millibars rising, good visibility. From Rasch.
