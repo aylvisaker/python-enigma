@@ -1,11 +1,15 @@
 import random
 import time
 import sys
+import itertools
 
 # MISCELLANEOUS SIMPLE TOOLS
 alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 let = {i:alphabet[i] for i in xrange(26)}
 num = {alphabet[i]:i for i in xrange(26)}
+for x, y in zip(alphabet, range(26)):
+    let[x] = x
+    num[y] = y
 
 # HISTORICALLY ACCURATE ENIGMA ROTORS
 rotorCollection = {'I': 'EKMFLGDQVZNTOWYHXUSPAIBRCJ',
@@ -43,11 +47,10 @@ def convert(message):
 class enigma(object):
     """
     A class representing an enigma machine with rotors, reflector, and plugboard configured.
-    Rotor positions initially set to 'AAA'.
     """
     def __init__(self, rotors = ['I', 'II', 'III'], rings = 'AAA', reflector = 'B', plugboard = '', position = 'AAA'):
         """
-        Initialize an instance of of the machine class.
+        Initialize an instance of of the enigma class.
         :param rotors: list of rotor names (I - VIII)
         :param rings: string containing the ring settings (Ringstellung)
         :param reflector: reflector name (A, B, C, Bt, or Ct)
@@ -145,6 +148,50 @@ class enigma(object):
         # Encrypt / decrypt the message.
         return [self.encryptCharacter(x) for x in output]
 
+class bombe(object):
+    """
+    A class representing an instance of the Bombe machine with crib wired in.
+    """
+    def __init__(self, cipher, plain, n = 3):
+        """
+        Initialize an instance of the bombe class.
+        :param cipher: cipher text
+        :param plain: plain text
+        """
+        # Convert cipher / plain text to numeric data if not done already.
+        if cipher[0] in range(26):
+            self.cipher = cipher
+        else:
+            self.cipher = convert(cipher)
+        if plain[0] in range(26):
+            self.plain = plain
+        else:
+            self.plain = convert(plain)
+        self.numberrotors = n
+
+    def findsolution(self):
+        """
+        Search through all rotor / reflector configurations.
+        :return:
+        """
+        for ref in reflectorCollection.iterkeys():
+            for rots in itertools.combinations(rotorCollection.iterkeys(), 3):
+                emachine = enigma(rots, 'AAA', ref, '', 'AAA')
+                self.findcontradiction(emachine)
+
+    def findcontradiction(self, emachine):
+        """
+        Search for a contradiction in the crib.
+        """
+        positions = itertools.combinations_with_replacement(alphabet, 3)
+        plugguess = {x: x for x in range(26)}
+        for pos in positions:
+            emachine.setPosition(pos)
+
+            emachine.encryptMessage(self.cipher)
+
+        return "i dunno, probably"
+
 def test():
     rotors = ['II', 'VI', 'IV']
     rings = 'ALQ'
@@ -180,7 +227,7 @@ def test():
     n = 5000
     t = time.clock()
     for x in range(n):
-        machine = enigma(rotors, rings, reflector, plugboard, position)
+        machine = enlsigma(rotors, rings, reflector, plugboard, position)
     t = time.clock() - t
     print 'Initializing machines ' + str(int(n / t)) + ' times per second.'
 
