@@ -227,7 +227,7 @@ def test():
     n = 5000
     t = time.clock()
     for x in range(n):
-        machine = enlsigma(rotors, rings, reflector, plugboard, position)
+        machine = enigma(rotors, rings, reflector, plugboard, position)
     t = time.clock() - t
     print 'Initializing machines ' + str(int(n / t)) + ' times per second.'
 
